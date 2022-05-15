@@ -1,0 +1,376 @@
+00001044 Starting Address
+Assembler used: EASy68K Editor/Assembler v5.16.01
+Created On: 09/05/2022 20:20:08
+
+00000000                             1  
+00000000                             2  *-----------------------------------------------------------
+00000000                             3  * Title      : PRAFIN22
+00000000                             4  * Written by : <nombres completos de los autores>
+00000000                             5  * Date       : 30/05/2022
+00000000                             6  * Description: Emulador de la JARVIS
+00000000                             7  *-----------------------------------------------------------
+00001000                             8      ORG $1000
+00001000= 2800 2A03 50E0 0...        9  EMEM:   DC.W $2800,$2A03,$50E0,$0B60,$5114,$0C70,$1430,$0E40,$7140,$3001,$32FF,$90D0
+00001018= 8020 C000 0002 0...       10          DC.W $8020,$C000,$0002,$0003,$0001,$0003,$0002,$0004,$0000,$0000,$0000
+0000102E= 0000                      11  EIR:    DC.W 0 ;eregistro de instruccion
+00001030= 0000                      12  EPC:    DC.W 0 ;econtador de programa
+00001032= 0000                      13  EB0:    DC.W 0 ;eregistro B0
+00001034= 0000                      14  EB1:    DC.W 0 ;eregistro B1
+00001036= 0000                      15  ER2:    DC.W 0 ;eregistro R2
+00001038= 0000                      16  ER3:    DC.W 0 ;eregistro R3
+0000103A= 0000                      17  ER4:    DC.W 0 ;eregistro R4
+0000103C= 0000                      18  ER5:    DC.W 0 ;eregistro R5
+0000103E= 0000                      19  ET6:    DC.W 0 ;eregistro T6
+00001040= 0000                      20  ET7:    DC.W 0 ;eregistro T7
+00001042= 0000                      21  ESR:    DC.W 0 ;eregistro de estado (00000000 00000ZCN)
+00001044                            22  
+00001044                            23  START:
+00001044  4278 1030                 24      CLR.W EPC
+00001048                            25  
+00001048                            26  FETCH:
+00001048                            27      ;--- IFETCH: INICIO FETCH
+00001048                            28          ;*** En esta seccion debeis introducir el codigo necesario para cargar
+00001048                            29          ;*** en el EIR la siguiente instruccion a ejecutar, indicada por el EPC,
+00001048                            30          ;*** y dejar listo el EPC para que apunte a la siguiente instruccion
+00001048                            31      
+00001048                            32          ; ESCRIBID VUESTRO CODIGO AQUI
+00001048                            33  
+00001048  3E38 1030                 34      MOVE.W  EPC,D7
+0000104C  CFFC 0002                 35      MULS.W  #2,D7
+00001050  3047                      36      MOVE.W  D7,A0
+00001052  31E8 1000 102E            37      MOVE.W  EMEM(A0),EIR
+00001058  5278 1030                 38      ADD.W   #1,EPC
+0000105C                            39          
+0000105C                            40      ;--- FFETCH: FIN FETCH
+0000105C                            41      
+0000105C                            42      
+0000105C                            43      ;--- IBRDECOD: INICIO SALTO A DECOD
+0000105C                            44          ;*** En esta seccion debeis preparar la pila para llamar a la subrutina
+0000105C                            45          ;*** DECOD, llamar a la subrutina, y vaciar la pila correctamente,
+0000105C                            46          ;*** almacenando el resultado de la decodificacion en D1
+0000105C                            47  
+0000105C                            48          ; ESCRIBID VUESTRO CODIGO AQUI
+0000105C                            49      ;SUBQ.W #2,-(A7)
+0000105C  3F38 102E                 50      MOVE.W EIR,-(A7) ;MOVE.W EIR,0(A7) [error]
+00001060                            51      
+00001060                            52          
+00001060                            53      ;--- FBRDECOD: FIN SALTO A DECOD
+00001060  4EB9 00001116             54      JSR DECOD  
+00001066                            55  
+00001066  31DF 102E                 56      MOVE.W  (A7)+,EIR
+0000106A  321F                      57      MOVE.W  (A7)+,D1
+0000106C                            58      
+0000106C                            59      ;--- IBREXEC: INICIO SALTO A FASE DE EJECUCION
+0000106C                            60          ;*** Esta seccion se usa para saltar a la fase de ejecucion
+0000106C                            61          ;*** NO HACE FALTA MODIFICARLA
+0000106C  C2FC 0006                 62      MULU #6,D1
+00001070  2241                      63      MOVEA.L D1,A1
+00001072  4EE9 1076                 64      JMP JMPLIST(A1)
+00001076                            65  JMPLIST:
+00001076  4EF9 000010CA             66      JMP ETRA
+0000107C  4EF9 000010D0             67      JMP EADD
+00001082  4EF9 000010D6             68      JMP ESUB
+00001088  4EF9 000010DA             69      JMP ENAN
+0000108E  4EF9 000010DE             70      JMP ESTC
+00001094  4EF9 000010E4             71      JMP EINC
+0000109A  4EF9 000010EA             72      JMP ELOA
+000010A0  4EF9 000010EE             73      JMP ELOAX
+000010A6  4EF9 000010F4             74      JMP ESTO
+000010AC  4EF9 000010FA             75      JMP ESTOX
+000010B2  4EF9 00001100             76      JMP EBRI
+000010B8  4EF9 00001106             77      JMP EBRZ
+000010BE  4EF9 0000110C             78      JMP EBRN
+000010C4  4EF9 00001110             79      JMP ESTP
+000010CA                            80      ;--- FBREXEC: FIN SALTO A FASE DE EJECUCION
+000010CA                            81      
+000010CA                            82      
+000010CA                            83      ;--- IEXEC: INICIO EJECUCION
+000010CA                            84          ;*** En esta seccion debeis implementar la ejecucion de cada einstr.
+000010CA                            85      
+000010CA                            86      ; ESCRIBID EN CADA ETIQUETA LA FASE DE EJECUCION DE CADA INSTRUCCION
+000010CA                            87  ETRA:
+000010CA  5243                      88      ADDQ.W #1,D3
+000010CC  4EF8 1048                 89      JMP FETCH
+000010D0                            90  EADD:
+000010D0  5243                      91      ADDQ.W #1,D3
+000010D2  4EF8 1048                 92      JMP FETCH
+000010D6                            93  ESUB:
+000010D6                            94      ;ADDQ.W #0,D3
+000010D6  4EF8 1048                 95      JMP FETCH
+000010DA                            96  ENAN:
+000010DA                            97      ;ADDQ.W #0,D3
+000010DA  4EF8 1048                 98      JMP FETCH
+000010DE                            99  ESTC:
+000010DE  5243                     100      ADDQ.W #1,D3
+000010E0  4EF8 1048                101      JMP FETCH
+000010E4                           102  EINC:
+000010E4  5243                     103      ADDQ.W #1,D3
+000010E6  4EF8 1048                104      JMP FETCH
+000010EA                           105  ELOA:
+000010EA                           106      ;ADDQ.W #0,D3
+000010EA  4EF8 1048                107      JMP FETCH
+000010EE                           108  ELOAX:
+000010EE  5243                     109      ADDQ.W #1,D3
+000010F0  4EF8 1048                110      JMP FETCH
+000010F4                           111  ESTO:
+000010F4  5243                     112      ADDQ.W #1,D3
+000010F6  4EF8 1048                113      JMP FETCH
+000010FA                           114  ESTOX:
+000010FA  5243                     115      ADDQ.W #1,D3
+000010FC  4EF8 1048                116      JMP FETCH
+00001100                           117  EBRI:
+00001100  5243                     118      ADDQ.W #1,D3
+00001102  4EF8 1048                119      JMP FETCH
+00001106                           120  EBRZ:
+00001106  5243                     121      ADDQ.W #1,D3
+00001108  4EF8 1048                122      JMP FETCH
+0000110C                           123  EBRN:
+0000110C                           124      ;ADDQ.W #0,D3
+0000110C  4EF8 1048                125      JMP FETCH
+00001110                           126  ESTP:
+00001110  5243                     127      ADDQ.W #1,D3
+00001112  FFFF FFFF                128      SIMHALT
+00001116                           129      ;--- FEXEC: FIN EJECUCION
+00001116                           130      
+00001116                           131  
+00001116                           132      ;--- ISUBR: INICIO SUBRUTINAS
+00001116                           133          ;*** Aqui debeis incluir las subrutinas que necesite vuestra solucion
+00001116                           134          ;*** SALVO DECOD, que va en la siguiente seccion
+00001116                           135  
+00001116                           136          ; ESCRIBID VUESTRO CODIGO AQUI
+00001116                           137          
+00001116                           138      ;--- FSUBR: FIN SUBRUTINAS
+00001116                           139      
+00001116                           140  
+00001116                           141      ;--- IDECOD: INICIO DECOD
+00001116                           142          ;*** Tras la etiqueta DECOD, debeis implementar la subrutina de 
+00001116                           143          ;*** decodificacion, que debera ser de libreria, siguiendo la interfaz
+00001116                           144          ;*** especificada en el enunciado
+00001116                           145  DECOD:
+00001116                           146          ; ESCRIBID VUESTRO CODIGO AQUI
+00001116  3F00                     147      MOVE.W D0,-(A7) ;GUARDAMOS LOS VALORES DE ESTOS REGISTROS PORQUE LOS 
+00001118                           148                      ;USAMOS EN DECOD Y ASI NO LOS MODIFICAMOS
+00001118  3F06                     149      MOVE.W D6,-(A7)
+0000111A  302F 0008                150      MOVE.W 8(A7),D0 ;METEMOS EL EIR DE LA PILA EN D0
+0000111E                           151  
+0000111E                           152  
+0000111E                           153      ; ESCRIBID VUESTRO CODIGO AQUI
+0000111E  0800 000F                154      BTST.L #15,D0
+00001122  6700 0016                155      BEQ O ;SALTAMOS SI EL BIT QUE COMPROBAMOS ES 0 , EN CASO NEGATIVO
+00001126                           156                 
+00001126  4EF9 0000112C            157      JMP I ;LEEMOS LA SIGUIENTE INSTRUCCION JMP YA TENIENDO EN CUENTA QUE ES 1
+0000112C                           158  I: 
+0000112C  0800 000E                159      BTST.L #14,D0
+00001130  6700 0110                160      BEQ IO
+00001134  4EF9 00001238            161      JMP II  
+0000113A                           162   
+0000113A                           163  O:  ;
+0000113A  0800 000E                164      BTST.L #14,D0
+0000113E  6700 0008                165      BEQ OO
+00001142  4EF9 000011E6            166      JMP OI
+00001148                           167  
+00001148                           168  OO:            
+00001148  0800 000D                169          BTST.L #13,D0 ;AL SABER QUE INSTRUCCION ES METEMOS SU VALOR
+0000114C  6700 0008                170          BEQ OOO
+00001150  4EF9 00001164            171          JMP OOI            ; NUMERICO ASIGNADO EN ESTA PRACTICA 
+00001156                           172                  ; Y LO METEMOS EN D6 
+00001156                           173  OOO:
+00001156  0800 000C                174      BTST.L #12,D0
+0000115A  6700 0016                175      BEQ OOOO
+0000115E  4EF9 00001180            176      JMP OOOI
+00001164                           177          
+00001164                           178  OOI:    
+00001164  0800 000C                179      BTST.L #12,D0
+00001168  6700 0050                180      BEQ OOIO
+0000116C  4EF9 000011AC            181      JMP OOII
+00001172                           182  
+00001172                           183  OOOO:
+00001172  0800 000B                184      BTST.L #11,D0
+00001176  6700 0112                185      BEQ ERROR ;ERROR
+0000117A  4EF9 0000118E            186      JMP OOOOI
+00001180                           187  
+00001180                           188  OOOI:
+00001180  0800 000B                189      BTST.L #11,D0
+00001184  6700 0012                190      BEQ OOOIO
+00001188  4EF9 000011A2            191      JMP OOOII
+0000118E                           192  
+0000118E                           193  OOOOI:;TRA
+0000118E  3C3C 0000                194      MOVE.W #0,D6
+00001192  4EF9 0000128E            195      JMP VEC
+00001198                           196  OOOIO: ;ADD
+00001198  3C3C 0001                197      MOVE.W #1,D6
+0000119C  4EF9 0000128E            198      JMP VEC
+000011A2                           199  OOOII: ; SUB
+000011A2  3C3C 0002                200      MOVE.W #2,D6
+000011A6  4EF9 0000128E            201      JMP VEC
+000011AC                           202  OOII:
+000011AC  0800 000B                203      BTST.L #11,D0
+000011B0  6700 002A                204      BEQ OOIIO 
+000011B4  4EF9 0000128A            205      JMP ERROR ; ERROR
+000011BA                           206  
+000011BA                           207  OOIO:
+000011BA  0800 000B                208      BTST.L #11,D0
+000011BE  6700 0008                209      BEQ OOIOO
+000011C2  4EF9 000011D2            210      JMP OOIOI
+000011C8                           211  OOIOO: ; NAN
+000011C8  3C3C 0003                212      MOVE.W #3,D6
+000011CC  4EF9 0000128E            213      JMP VEC
+000011D2                           214  OOIOI: ; STC
+000011D2  3C3C 0004                215      MOVE.W #4,D6
+000011D6  4EF9 0000128E            216      JMP VEC
+000011DC                           217  OOIIO: ; INC
+000011DC  3C3C 0005                218      MOVE.W #5,D6
+000011E0  4EF9 0000128E            219      JMP VEC
+000011E6                           220  
+000011E6                           221  
+000011E6                           222  
+000011E6                           223  
+000011E6                           224     
+000011E6                           225  OI:
+000011E6  0800 000D                226      BTST.L #13,D0
+000011EA  6700 0008                227      BEQ OIO
+000011EE  4EF9 00001202            228      JMP OII    
+000011F4                           229  
+000011F4                           230  OIO:
+000011F4  0800 000C                231      BTST.L #12,D0
+000011F8  6700 0016                232      BEQ OIOO
+000011FC  4EF9 0000121A            233      JMP OIOI
+00001202                           234  OII:
+00001202  0800 000C                235      BTST.L #12,D0
+00001206  6700 001C                236      BEQ OIIO
+0000120A  4EF9 0000122E            237      JMP OIII
+00001210                           238  OIOO: ;LOA  M   
+00001210  3C3C 0006                239      MOVE.W #6,D6
+00001214  4EF9 0000128E            240      JMP VEC     
+0000121A                           241  OIOI: ;LOAX M(Bi),Tj
+0000121A  3C3C 0007                242      MOVE.W #7,D6
+0000121E  4EF9 0000128E            243      JMP VEC
+00001224                           244  OIIO: ;STO  M
+00001224  3C3C 0008                245      MOVE.W #8,D6
+00001228  4EF9 0000128E            246      JMP VEC
+0000122E                           247  OIII: ;STOX Tj,M(Bi)
+0000122E  3C3C 0009                248      MOVE.W #9,D6
+00001232  4EF9 0000128E            249      JMP VEC 
+00001238                           250  II:   ; STP
+00001238                           251      
+00001238                           252      
+00001238  3C3C 000D                253      MOVE.W #13,D6
+0000123C  4EF9 0000128E            254      JMP VEC
+00001242                           255      
+00001242                           256  
+00001242                           257  IO:
+00001242  0800 000D                258      BTST.L #13,D0
+00001246  6700 0008                259      BEQ IOO
+0000124A  4EF9 00001272            260      JMP IOI
+00001250                           261  IOO:
+00001250  0800 000C                262      BTST.L #12,D0
+00001254  6700 0012                263      BEQ IOOO
+00001258  4EF9 0000125E            264      JMP IOOI
+0000125E                           265      
+0000125E                           266  IOOI: ;BRZ M
+0000125E  3C3C 000B                267      MOVE.W #11,D6
+00001262  4EF9 0000128E            268      JMP VEC
+00001268                           269  IOOO: ;BRI M
+00001268  3C3C 000A                270      MOVE.W #10,D6
+0000126C  4EF9 0000128E            271      JMP VEC      
+00001272                           272  IOI:
+00001272  0800 000C                273      BTST.L #12 ,D0
+00001276  6700 0008                274      BEQ IOIO
+0000127A  4EF9 0000128A            275      JMP ERROR ; error
+00001280                           276  
+00001280                           277      
+00001280                           278  IOIO: ;BRN M
+00001280  3C3C 000C                279      MOVE.W #12,D6
+00001284  4EF9 0000128E            280      JMP VEC
+0000128A                           281      
+0000128A                           282  
+0000128A                           283  
+0000128A                           284  
+0000128A                           285      
+0000128A                           286  ERROR: 
+0000128A  FFFF FFFF                287      SIMHALT    
+0000128E                           288  VEC:
+0000128E  3F46 000A                289      MOVE.W D6,10(A7) ;AQUI ES DONDE PONEMOS EL ID AL FINAL DE LA PILA 
+00001292  4246                     290      CLR D6           
+00001294  4EF9 0000129A            291      JMP FINAL 
+0000129A                           292         
+0000129A                           293  FINAL:
+0000129A  3C1F                     294      MOVE.W (A7)+,D6  ;RECUPERAMOS LOS VALORES DE LOS REGISTROS
+0000129C                           295                       ;PARA DEJARLOS COMO ESTABAN ANTES
+0000129C  301F                     296      MOVE.W (A7)+,D0  ;RTS TENEMOS LA DIRECCION PC Y LUEGO CUANDO 
+0000129E                           297                       ;VOLVEMOS AL PROG PRINCIPAL RECUPERAMOS EIR E ID
+0000129E  4E75                     298      RTS
+000012A0                           299  
+000012A0                           300  
+000012A0                           301      ;--- FDECOD: FIN DECOD
+000012A0                           302      END    START
+
+No errors detected
+No warnings generated
+
+
+SYMBOL TABLE INFORMATION
+Symbol-name         Value
+-------------------------
+DECOD               1116
+EADD                10D0
+EB0                 1032
+EB1                 1034
+EBRI                1100
+EBRN                110C
+EBRZ                1106
+EINC                10E4
+EIR                 102E
+ELOA                10EA
+ELOAX               10EE
+EMEM                1000
+ENAN                10DA
+EPC                 1030
+ER2                 1036
+ER3                 1038
+ER4                 103A
+ER5                 103C
+ERROR               128A
+ESR                 1042
+ESTC                10DE
+ESTO                10F4
+ESTOX               10FA
+ESTP                1110
+ESUB                10D6
+ET6                 103E
+ET7                 1040
+ETRA                10CA
+FETCH               1048
+FINAL               129A
+I                   112C
+II                  1238
+IO                  1242
+IOI                 1272
+IOIO                1280
+IOO                 1250
+IOOI                125E
+IOOO                1268
+JMPLIST             1076
+O                   113A
+OI                  11E6
+OII                 1202
+OIII                122E
+OIIO                1224
+OIO                 11F4
+OIOI                121A
+OIOO                1210
+OO                  1148
+OOI                 1164
+OOII                11AC
+OOIIO               11DC
+OOIO                11BA
+OOIOI               11D2
+OOIOO               11C8
+OOO                 1156
+OOOI                1180
+OOOII               11A2
+OOOIO               1198
+OOOO                1172
+OOOOI               118E
+START               1044
+VEC                 128E
