@@ -22,7 +22,7 @@ ESR:    DC.W 0 ;eregistro de estado (00000000 00000ZCN)
 
 START:
     CLR.W EPC
-
+ ;.
 FETCH:
     ;--- IFETCH: INICIO FETCH
         ;*** En esta seccion debeis introducir el codigo necesario para cargar
@@ -376,6 +376,7 @@ FINAL:
 
     ;--- FDECOD: FIN DECOD
     END    START
+
 
 
 
