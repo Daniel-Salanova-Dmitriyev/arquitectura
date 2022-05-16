@@ -22,7 +22,7 @@ ESR:    DC.W 0 ;eregistro de estado (00000000 00000ZCN)
 
 START:
     CLR.W EPC
- ;.
+
 FETCH:
     ;--- IFETCH: INICIO FETCH
         ;*** En esta seccion debeis introducir el codigo necesario para cargar
@@ -208,6 +208,120 @@ ESTP:
     ;--- ISUBR: INICIO SUBRUTINAS
         ;*** Aqui debeis incluir las subrutinas que necesite vuestra solucion
         ;*** SALVO DECOD, que va en la siguiente seccion
+
+
+
+FLAGS:        ;(00000000 000XNZVC)--(00000000 00000ZCN) 
+   ;FLAG N
+    MOVE.W D4,D5
+    AND.W #%0000000000001000,D5  ;HACEMOS UNA MASCARA DEL BIT 3 
+    BEQ N0 
+    JMP N1
+
+N0:         ;SI EL BIT 3 DE SR ES 0 CAMBIAMOS EL VALOR DE EL BIT 2 DE ESR A 0
+    AND.W #%1111111111111110,ESR
+    JMP FLAGC
+    
+N1:         ;SI EL BIT 3 DE SR ES 1 CAMBIAMOS EL VALOR DE EL BIT 2 DE ESR A 1
+    OR.W #%0000000000000001,ESR
+    
+FLAGC:     
+    ;FLAG C     ;(00000000 000XNZVC)--(00000000 00000ZCN)  
+    MOVE.W D4,D5 
+    AND.W #%0000000000000001,D5 ;HACEMOS UNA MASCARA DEL BIT 0 
+    BEQ C0
+    JMP C1
+
+C0:         ;SI EL BIT 0 DE SR ES 0 CAMBIAMOS EL VALOR DE EL BIT 1 DE ESR A 0
+    AND.W #%1111111111111101,ESR
+    JMP FLAGZ
+    
+C1:          ;SI EL BIT 0 DE SR ES 1 CAMBIAMOS EL VALOR DE EL BIT 1 DE ESR A 1
+    OR.W #%0000000000000010,ESR
+  
+  
+FLAGZ:  ;(00000000 000XNZVC)--(00000000 00000ZCN)  
+    ;FLAG Z
+    MOVE.W D4,D5
+    AND.W #%0000000000000100,D5 ;HACEMOS UNA MASCARA DEL BIT 2 
+    BEQ FN0
+    JMP FN1
+
+FN0:          ;SI EL BIT 2 DE SR ES 0 CAMBIAMOS EL VALOR DE EL BIT 0 DE ESR A 0
+    AND.W #%1111111111111011,ESR
+    RTS
+    
+FN1:          ;SI EL BIT 2 DE SR ES 1 CAMBIAMOS EL VALOR DE EL BIT 0 DE ESR A 1
+    OR.W #%0000000000000100,ESR
+    RTS
+
+
+;///////////////////////////////////////////////////////////////////////////
+CREG:
+    BTST.L #2,D3
+    BEQ REG0
+    JMP REG1
+REG1:
+    BTST.L #1,D3
+    BEQ REG10
+    JMP REG11 
+
+REG0:
+    BTST.L #1,D3
+    BEQ REG00
+    JMP REG01
+REG01:
+    BTST.L #0,D3
+    BEQ R2
+    JMP R3
+
+REG10:
+    BTST.L #0,D3
+    BEQ R4
+    JMP R5
+REG11:
+    BTST.L #0,D3
+    BEQ T6
+    JMP T7
+
+REG00:
+    BTST.L #0,D3
+    BEQ B0
+    JMP B1
+
+
+B0:
+    MOVE.W ER0,D3 ;SABEMOS QUE ES B0
+    LEA EB0, A3
+    RTS
+B1:
+    MOVE.W ER1,D3 ;SABEMOS QUE ES B1
+    LEA EB1, A3
+    RTS
+R2:
+    MOVE.W ER2,D3 ;SABEMOS QUE ES R2
+    LEA ER2, A3
+    RTS 
+R3:
+    MOVE.W ER3,D3 ;SABEMOS QUE ES R3
+    LEA ER3, A3
+    RTS
+R4:
+    MOVE.W ER4,D3 ;SABEMOS QUE ES R4
+    LEA ER4, A3
+    RTS
+R5:
+    MOVE.W ER5,D3 ;SABEMOS QUE ES R5 
+    LEA ER5, A3
+    RTS
+T6:
+    MOVE.W ET6,D3 ;SABEMOS QUE ES T6 
+    LEA ET6, A3    
+    RTS
+T7:
+    MOVE.W ET7,D3 ;SABEMOS QUE ES T7
+    LEA ET7, A3
+    RTS
 
 	    ; ESCRIBID VUESTRO CODIGO AQUI
         
