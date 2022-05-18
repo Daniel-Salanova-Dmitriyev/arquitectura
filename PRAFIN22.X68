@@ -46,8 +46,8 @@ FETCH:
         ;*** almacenando el resultado de la decodificacion en D1
 
     	; ESCRIBID VUESTRO CODIGO AQUI
-	SUBQ.W	#2,-(A7)
-	MOVE.W EIR,(A7) ;0(A7) [error]
+	MOVE.W	#0,-(A7)
+	MOVE.W EIR,-(A7) 
 	
         
     ;--- FBRDECOD: FIN SALTO A DECOD
@@ -291,11 +291,11 @@ REG00:
 
 
 B0:
-    MOVE.W ER0,D3 ;SABEMOS QUE ES B0
+    MOVE.W EB0,D3 ;SABEMOS QUE ES B0
     LEA EB0, A3
     RTS
 B1:
-    MOVE.W ER1,D3 ;SABEMOS QUE ES B1
+    MOVE.W EB1,D3 ;SABEMOS QUE ES B1
     LEA EB1, A3
     RTS
 R2:
@@ -490,6 +490,7 @@ FINAL:
 
     ;--- FDECOD: FIN DECOD
     END    START
+
 
 
 
