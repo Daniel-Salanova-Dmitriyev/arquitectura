@@ -147,7 +147,22 @@ ENAN:
 	
 	JMP FETCH
 ESTC:
+	MOVE.W EIR,D3
+	AND.W #%0000000011111111,D3
+	EXT.W D3 ;K extendido
 	
+	MOVE.W D3, D2 ; Movemos k a D2
+	
+	MOVE.W SR,D4
+	JSR FLAGS
+	
+	MOVE.W EIR, D3 
+	AND.W #%0000011100000000,D3
+	LSR.L #8,D3 ;Hayamos donde colocar el valor
+
+	JSR CREG ;Buscamos posicion de memoria donde almacenar
+	
+	MOVE.W D2, (A3) ; Almacenamos en la posicion de memoria necesaria
 	JMP FETCH
 EINC:
 	
@@ -494,6 +509,7 @@ FINAL:
 
     ;--- FDECOD: FIN DECOD
     END    START
+
 
 
 
