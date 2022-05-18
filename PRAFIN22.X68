@@ -46,9 +46,13 @@ FETCH:
         ;*** almacenando el resultado de la decodificacion en D1
 
     	; ESCRIBID VUESTRO CODIGO AQUI
+
 	MOVE.W	#0,-(A7)
 	MOVE.W EIR,-(A7) 
 	
+
+ 	
+
         
     ;--- FBRDECOD: FIN SALTO A DECOD
   	JSR DECOD  
@@ -490,6 +494,7 @@ FINAL:
 
     ;--- FDECOD: FIN DECOD
     END    START
+
 
 
 
