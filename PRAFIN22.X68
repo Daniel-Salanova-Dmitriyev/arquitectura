@@ -89,7 +89,24 @@ JMPLIST:
 	
 	; ESCRIBID EN CADA ETIQUETA LA FASE DE EJECUCION DE CADA INSTRUCCION
 ETRA:
-	
+    ;FALTA REVISAR!
+	MOVE.W 	EIR,D3
+    AND.W 	#%0000000001110000,D3  ;OBTENEMOS A 
+    LSR.L 	#4,D3  ;movemos desplazamos 4 bits
+    
+    JSR CREG ;Descubrimos A y recogemos su contenido
+    MOVE.W D3,D2 ;Contenido de A movido a D2
+    
+    MOVE.w SR, D4 ;actualizamos flags al mover el dato
+    JSR FLAGS 
+    
+    MOVE.W 	EIR,D3
+    AND.W 	#%0000011100000000,D3 ;OBTENEMOS B
+    LSR.L	#8,D3 ; desplazamos 8 bits
+    JSR CREG
+    
+    MOVE.W D2, (A3) ;copiamos el contenido de A en B
+    
 	JMP FETCH
 EADD:
 	MOVE.W 	EIR,D3
@@ -144,16 +161,38 @@ ESUB:
     MOVE.W D3, (A3)
 	JMP FETCH
 ENAN:
-	
+	MOVE.W EIR,D3
+    AND.W #%0000000001110000,D3  ;OBTENEMOS A 
+    LSR.L #4,D3  
+
+    JSR CREG
+    MOVE.W D3,D2                ;METEMOS EL OPERANDO A A D2    
+    
+    MOVE.W EIR,D3
+    AND.W #%0000011100000000,D3 ;OBTENEMOS B
+    LSR.L #8,D3
+    JSR CREG
+    ;AHORA TENEMOS EL OPERANDO A EN D2 Y B EN D3 Y 
+    ;ADEMAS TENEMOS LA DIRECCION DEL REGISTRO DE B EN A3
+    
+    ;Equivalente a NAND
+    AND.W D2, D3
+    NOT.W D3 
+    
+    MOVE.W SR,D4 ;ACTUALIZAMOS LOS FLAGS
+    JSR FLAGS  
+    
+    MOVE.W D3, (A3) ;Movemos el dato a B
 	JMP FETCH
 ESTC:
+    ;FALTA REVISAR!
 	MOVE.W EIR,D3
 	AND.W #%0000000011111111,D3
 	EXT.W D3 ;K extendido
 	
 	MOVE.W D3, D2 ; Movemos k a D2
 	
-	MOVE.W SR,D4
+	MOVE.W SR,D4 ;Actualizamos flags
 	JSR FLAGS
 	
 	MOVE.W EIR, D3 
@@ -165,7 +204,23 @@ ESTC:
 	MOVE.W D2, (A3) ; Almacenamos en la posicion de memoria necesaria
 	JMP FETCH
 EINC:
+    ;FALTA REVISAR
+	MOVE.W EIR,D3
+	AND.W #%0000000011111111,D3
+	EXT.W D3 ;K extendido
+	MOVE.W D3, D2 ; Movemos K a D2
 	
+	MOVE.W EIR, D3 
+	AND.W #%0000011100000000,D3
+	LSR.L #8,D3 
+	JSR CREG ;Hayamos B D3=VALOR, A3=POSICION
+	
+	ADD.W D2, D3
+	
+	MOVE.W SR,D4 ;Actualizamos flags
+	JSR FLAGS
+
+    MOVE.W D3, (A3)	
 	JMP FETCH
 ELOA:
 	
@@ -509,6 +564,7 @@ FINAL:
 
     ;--- FDECOD: FIN DECOD
     END    START
+
 
 
 
