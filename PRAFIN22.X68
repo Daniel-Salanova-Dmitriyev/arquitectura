@@ -223,9 +223,58 @@ EINC:
     MOVE.W D3, (A3)	
 	JMP FETCH
 ELOA:
+    ;FALTA REVISAR
+	MOVE.W EIR, D3 
+	AND.W #%0000111111110000,D3 ;Mascara
+	LSR.L #4, D3 ;Tenemos M
+	
+	MOVE D3, D2 ; ALMACENAMOS M EN D2
+	
+	MOVE.W #%0000000000000110, D3 ;Tenemos T6
+	JSR CREG ;Tenemos poscion y contenido de T6
+	
+	MULU.W #2,D2 ;Multiplicamos por 2 ya que en la memoria son LONG almacenados como WORD
+	MOVE.W D2, A2
+	
+	MOVE.W EMEM(A2),(A3)
+	MOVE.W SR,D4 ;Actualizamos flags
+	JSR FLAGS
 	
 	JMP FETCH
 ELOAX:
+	;FALTA REVISAR CUANDO HAGA EL BUCLE
+	;HACE BIEN LOS MOVIMIENTOS
+	MOVE.W EIR, D3 
+	AND.W #%0000111111110000,D3 ;Mascara
+	LSR.L #4, D3 ;Tenemos M
+	;MOVE.W #28, A2
+	;MOVE.W EMEM(A2),D6
+	
+    LEA.L EMEM,A2 ;Hayamos la direccion de EMEM
+    MOVE.W D3,D2  ;Guardamos M
+	
+	MOVE.W EIR, D3 
+	AND.W #%0000000000001000,D3 ;Mascara
+	LSR.L #3, D3 ;Tenemos i
+	BCLR.L #1,D3
+	BCLR.L #2,D3 ;Ahora tendremos en D3 00X -> X = 1 o 0
+	JSR CREG ; Hayamos contenido de Bi
+	
+	ADD.W D3, D2 ;Ahora tenemos contenido Bi + M
+	MULU.W #2,D2 ;Multiplicamos por 2 ya que en la memoria son LONG almacenados como WORD
+	
+    MOVE.W EIR, D3 
+	AND.W #%0000000000000100,D3 ;Mascara
+	LSR.L #2, D3 ;Tenemos j
+	BSET.L #1,D3
+	BSET.L #2,D3 ;Ahora tendremos en D3 11X -> X = 1 o 0
+	JSR CREG ; Hayamos contenido de Tj y direccion
+	
+	MOVE.W D2, A2
+	MOVE.W EMEM(A2),(A3) ;Movemos [M + [Bi]] -> A3
+	
+    MOVE.W SR,D4 ;Actualizamos flags
+	JSR FLAGS
 	
 	JMP FETCH
 ESTO:
@@ -564,6 +613,7 @@ FINAL:
 
     ;--- FDECOD: FIN DECOD
     END    START
+
 
 
 
