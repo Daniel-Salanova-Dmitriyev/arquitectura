@@ -1,7 +1,7 @@
 
 *-----------------------------------------------------------
 * Title      : PRAFIN22
-* Written by : <nombres completos de los autores>
+* Written by : Daniel Salanova Dmitriyev y Hugo Valls Sabater
 * Date       : 30/05/2022
 * Description: Emulador de la JARVIS
 *-----------------------------------------------------------
@@ -47,18 +47,18 @@ FETCH:
 
     	; ESCRIBID VUESTRO CODIGO AQUI
 
+    ;Preparamos la pila
 	MOVE.W	#0,-(A7)
 	MOVE.W EIR,-(A7) 
-	
-
  	
-
-        
-    ;--- FBRDECOD: FIN SALTO A DECOD
   	JSR DECOD  
 
+    ;Recogemos los datos incorporados que se encontraban final de la pila
 	MOVE.W	(A7)+,EIR
 	MOVE.W	(A7)+,D1
+        
+    ;--- FBRDECOD: FIN SALTO A DECOD
+
     
     ;--- IBREXEC: INICIO SALTO A FASE DE EJECUCION
         ;*** Esta seccion se usa para saltar a la fase de ejecucion
@@ -89,174 +89,183 @@ JMPLIST:
 	
 	; ESCRIBID EN CADA ETIQUETA LA FASE DE EJECUCION DE CADA INSTRUCCION
 ETRA:
-    ;FALTA REVISAR!
 	MOVE.W 	EIR,D3
-    AND.W 	#%0000000001110000,D3  ;OBTENEMOS A 
-    LSR.L 	#4,D3  ;movemos desplazamos 4 bits
+	;Obtenemos A
+    AND.W 	#%0000000001110000,D3 
+    LSR.L 	#4,D3  
     
-    JSR CREG ;Descubrimos A y recogemos su contenido
+    JSR CREG ;Hayamos posicion de A y su contenido
     MOVE.W D3,D2 ;Contenido de A movido a D2
     
-    MOVE.w SR, D4 ;actualizamos flags al mover el dato
+    ;Guardamos los flags de la operacion y actualizamos los de JARVIS
+    MOVE.w SR, D4
     JSR FLAGS 
     
     MOVE.W 	EIR,D3
-    AND.W 	#%0000011100000000,D3 ;OBTENEMOS B
-    LSR.L	#8,D3 ; desplazamos 8 bits
+    ;Obtenemos B
+    AND.W 	#%0000011100000000,D3
+    LSR.L	#8,D3
     JSR CREG
     
-    MOVE.W D2, (A3) ;copiamos el contenido de A en B
+    ;Copiamos el contenido de A a la poscion de B
+    MOVE.W D2, (A3) 
     
 	JMP FETCH
 EADD:
 	MOVE.W 	EIR,D3
-    AND.W 	#%0000000001110000,D3  ;OBTENEMOS A 
-    LSR.L 	#4,D3  ; lo he cambiado a 4
-
-    JSR 	CREG
+	;Obtenemos A
+    AND.W 	#%0000000001110000,D3  
+    LSR.L 	#4,D3
     
-    MOVE.W 	D3,D2                ;METEMOS EL OPERANDO A A D2                     
+    JSR 	CREG ;Hayamos posicion de A y su contenido
+    
+    MOVE.W 	D3,D2 ;Contenido movido de A a D2                     
     
     MOVE.W 	EIR,D3
-    AND.W 	#%0000011100000000,D3 ;OBTENEMOS B
-    LSR.L	#8,D3 ; esto es nuevo
-    JSR CREG
-    
-    ;AHORA TEEMOS EL OPERANDO A EN D2 Y B EN D3 Y ADEMAS 
-    ;TENEMOS LA DIRECCION DEL REGISTRO DE B EN A3
+    ;Obtenemos B
+    AND.W 	#%0000011100000000,D3 
+    LSR.L	#8,D3
+ 
+    JSR CREG ;Hayamos posicion de B y su contenido
+
+    ;Sumamos B + A
     ADD.W D2,D3
-    
-    MOVE.W SR,D4 ;ACTUALIZAMOS LOS FLAGS
+
+    ;Guardamos los flags de la operacion y actualizamos los de JARVIS    
+    MOVE.W SR,D4 
     JSR FLAGS
     
-    
+    ;Copiamos el resultado a B
     MOVE.W D3, (A3)
 	JMP FETCH
 ESUB:
 	MOVE.W EIR,D3
-    AND.W #%0000000001110000,D3  ;OBTENEMOS A 
+    AND.W #%0000000001110000,D3  ;Obtenemos A 
     LSR.L #4,D3  
 
-    JSR CREG
+    JSR CREG ;Hayamos posicion de A y su contenido
     
-    MOVE.W D3,D2                ;METEMOS EL OPERANDO A A D2                     
+    MOVE.W D3,D2 ;Contenido movido de A a D2                   
     
     MOVE.W EIR,D3
-    AND.W #%0000011100000000,D3 ;OBTENEMOS B
+    AND.W #%0000011100000000,D3 ;Obtenemos B
     LSR.L #8,D3
-    JSR CREG
-    ;AHORA TENEMOS EL OPERANDO A EN D2 Y B EN D3 Y 
-    ;ADEMAS TENEMOS LA DIRECCION DEL REGISTRO DE B EN A3
-    
+    JSR CREG ;Hayamos posicion de B y su contenido
+   
+    ;Se ejecuta la operacion A + (NO_B1 + 1)
     NOT D3
-    ADD.W #1,D3  ; ESTO esta mal 100
+    ADD.W #1,D3 
     ADD.W D2,D3
     
-    
-    ;Y LOS MOVEMOS AL ESR A NUESTROS EFLAGS
-    
-    MOVE.W SR,D4 ;ACTUALIZAMOS LOS FLAGS
+    ;Guardamos los flags de la operacion y actualizamos los de JARVIS
+    MOVE.W SR,D4 
     JSR FLAGS
 
+    ;Copiamos el resultado a B
     MOVE.W D3, (A3)
 	JMP FETCH
 ENAN:
 	MOVE.W EIR,D3
-    AND.W #%0000000001110000,D3  ;OBTENEMOS A 
+	;Obtenemos A 
+    AND.W #%0000000001110000,D3  
     LSR.L #4,D3  
 
-    JSR CREG
-    MOVE.W D3,D2                ;METEMOS EL OPERANDO A A D2    
+    JSR CREG ;Hayamos posicion de A y su contenido
+    MOVE.W D3,D2 ;Contenido movido de A a D2     
     
     MOVE.W EIR,D3
-    AND.W #%0000011100000000,D3 ;OBTENEMOS B
+    AND.W #%0000011100000000,D3 ;Obtenemos B
     LSR.L #8,D3
-    JSR CREG
-    ;AHORA TENEMOS EL OPERANDO A EN D2 Y B EN D3 Y 
-    ;ADEMAS TENEMOS LA DIRECCION DEL REGISTRO DE B EN A3
-    
-    ;Equivalente a NAND
+    JSR CREG ;Hayamos posicion de B y su contenido
+
+    ;Hacemos la AND de D3 y D2 para luego negarla, 
+    ;que es lo equivalente a NAND
     AND.W D2, D3
     NOT.W D3 
     
-    MOVE.W SR,D4 ;ACTUALIZAMOS LOS FLAGS
+    ;Guardamos los flags de la operacion y actualizamos los de JARVIS
+    MOVE.W SR,D4
     JSR FLAGS  
     
-    MOVE.W D3, (A3) ;Movemos el dato a B
+    ;Copiamos el resultado a B
+    MOVE.W D3, (A3) 
 	JMP FETCH
 ESTC:
-    ;FALTA REVISAR!
 	MOVE.W EIR,D3
 	AND.W #%0000000011111111,D3
-	EXT.W D3 ;K extendido
+	;Extendemos K para hacer las operaciones correctamente
+    EXT.W D3
 	
-	MOVE.W D3, D2 ; Movemos k a D2
-	
-	MOVE.W SR,D4 ;Actualizamos flags
-	JSR FLAGS
-	
-	MOVE.W EIR, D3 
-	AND.W #%0000011100000000,D3
-	LSR.L #8,D3 ;Hayamos donde colocar el valor
-
-	JSR CREG ;Buscamos posicion de memoria donde almacenar
-	
-	MOVE.W D2, (A3) ; Almacenamos en la posicion de memoria necesaria
-	JMP FETCH
-EINC:
-    ;FALTA REVISAR
-	MOVE.W EIR,D3
-	AND.W #%0000000011111111,D3
-	EXT.W D3 ;K extendido
-	MOVE.W D3, D2 ; Movemos K a D2
+	MOVE.W D3, D2
 	
 	MOVE.W EIR, D3 
 	AND.W #%0000011100000000,D3
 	LSR.L #8,D3 
-	JSR CREG ;Hayamos B D3=VALOR, A3=POSICION
+	JSR CREG ;Hayamos posicion de B y su contenido
+	
+	MOVE.W D2, (A3) ; Almacenamos K en posicion de B
+	
+    ;Guardamos los flags de la operacion y actualizamos los de JARVIS
+    MOVE.W SR,D4 
+	JSR FLAGS
+
+	JMP FETCH
+EINC:
+   	MOVE.W EIR,D3
+	AND.W #%0000000011111111,D3
+	;Extendemos K para hacer las operaciones correctamente
+    EXT.W D3 
+	
+    MOVE.W D3, D2
+	
+	MOVE.W EIR, D3 
+	AND.W #%0000011100000000,D3
+	LSR.L #8,D3 
+	JSR CREG 
 	
 	ADD.W D2, D3
 	
-	MOVE.W SR,D4 ;Actualizamos flags
+	MOVE.W SR,D4 
 	JSR FLAGS
 
     MOVE.W D3, (A3)	
 	JMP FETCH
 ELOA:
-    ;FALTA REVISAR
 	MOVE.W EIR, D3 
-	AND.W #%0000111111110000,D3 ;Mascara
-	LSR.L #4, D3 ;Tenemos M
+	AND.W #%0000111111110000,D3 
+	LSR.L #4, D3
 	
-	MOVE D3, D2 ; ALMACENAMOS M EN D2
+    ;Almacenamos M en D2
+	MOVE D3, D2 
 	
 	MOVE.W #%0000000000000110, D3 ;Tenemos T6
 	JSR CREG ;Tenemos poscion y contenido de T6
 	
-	MULU.W #2,D2 ;Multiplicamos por 2 ya que en la memoria son 
-				 ;LONG almacenados como WORD
-	MOVE.W D2, A2
+	;Multiplicamos por 2 para hayar correctamente el indice
+	;de la posicion que buscamos dentro de la memoria
+	MULU.W #2,D2 				
+    MOVE.W D2, A2
 	
 	MOVE.W EMEM(A2),(A3)
-	MOVE.W SR,D4 ;Actualizamos flags
+	
+	;Actualizamos flags
+    MOVE.W SR,D4 
 	JSR FLAGS
 	
 	JMP FETCH
 ELOAX:
-	;FALTA REVISAR CUANDO HAGA EL BUCLE
-	;HACE BIEN LOS MOVIMIENTOS
 	MOVE.W EIR, D3 
-	AND.W #%0000111111110000,D3 ;Mascara
-	LSR.L #4, D3 ;Tenemos M
-	;MOVE.W #28, A2
-	;MOVE.W EMEM(A2),D6
-	
-    LEA.L EMEM,A2 ;Hayamos la direccion de EMEM
+	AND.W #%0000111111110000,D3
+	LSR.L #4, D3 
+
+    ;LEA.L EMEM,A2 ;Hayamos la direccion de EMEM
     MOVE.W D3,D2  ;Guardamos M
 	
 	MOVE.W EIR, D3 
-	AND.W #%0000000000001000,D3 ;Mascara
-	LSR.L #3, D3 ;Tenemos i
+	AND.W #%0000000000001000,D3 
+	;Hayamos i y limipiamos los bits 1 y 2 ya que deben
+	;ser 00 para ser B0 o B1
+    LSR.L #3, D3 
 	BCLR.L #1,D3
 	BCLR.L #2,D3 ;Ahora tendremos en D3 00X -> X = 1 o 0
 	JSR CREG ; Hayamos contenido de Bi
@@ -264,7 +273,8 @@ ELOAX:
 
 	;Ahora tenemos contenido Bi + M
 	ADD.W D3, D2 
-	;Multiplicamos por 2 ya que en la memoria son LONG almacenados como WORD
+    ;Multiplicamos por 2 para hayar correctamente el indice
+	;de la posicion que buscamos dentro de la memoria
 	MULU.W #2,D2 
 	
     MOVE.W EIR, D3 
@@ -275,56 +285,50 @@ ELOAX:
 	JSR CREG ; Hayamos contenido de Tj y direccion
 	
 	MOVE.W D2, A2
-	MOVE.W EMEM(A2),(A3) ;Movemos [M + [Bi]] -> A3
+	MOVE.W EMEM(A2),(A3)
 	
     MOVE.W SR,D4 ;Actualizamos flags
 	JSR FLAGS
 	
 	JMP FETCH
 ESTO:
-	;FALTA REVISAR
 	MOVE.W EIR, D3 
-	AND.W #%0000111111110000,D3 ;Mascara
-	LSR.L #4, D3 ;Tenemos M
+	AND.W #%0000111111110000,D3
+	LSR.L #4, D3 
 	
-	MOVE D3, D2 ; ALMACENAMOS M EN D2
+	MOVE D3, D2 ; Almacenamos M en D2
 	
 	MOVE.W #%0000000000000110, D3 ;Tenemos T6
 	JSR CREG ;Tenemos poscion y contenido de T6
 	
-	MULU.W #2,D2 ;Multiplicamos por 2 ya que en la memoria son 
-				 ;LONG almacenados como WORD
+	;Multiplicamos por 2 para hayar correctamente el indice
+	;de la posicion que buscamos dentro de la memoria
+	MULU.W #2,D2
 	MOVE.W D2, A2
 	
-	MOVE.W D3,EMEM(A2)	MOVE.W SR,D4 ;Actualizamos flags
-	JSR FLAGS
-
+	MOVE.W D3,EMEM(A2)	
 	
 	JMP FETCH
 ESTOX:
-;FALTA REVISAR CUANDO HAGA EL BUCLE
-	;HACE BIEN LOS MOVIMIENTOS
 	MOVE.W EIR, D3 
-	AND.W #%0000111111110000,D3 ;Mascara
-	LSR.L #4, D3 ;Tenemos M
-	;MOVE.W #28, A2
-	;MOVE.W EMEM(A2),D6
-	
-    LEA.L EMEM,A2 ;Hayamos la direccion de EMEM
+	AND.W #%0000111111110000,D3
+	LSR.L #4, D3
+
     MOVE.W D3,D2  ;Guardamos M
 	
 	MOVE.W EIR, D3 
-	AND.W #%0000000000001000,D3 ;Mascara
+	AND.W #%0000000000001000,D3
 	LSR.L #3, D3 ;Tenemos i
-	BCLR.L #1,D3                                       ; CLONK
+	BCLR.L #1,D3  
 	BCLR.L #2,D3 ;Ahora tendremos en D3 00X -> X = 1 o 0
 	JSR CREG ; Hayamos contenido de Bi
 	
-
-	;Ahora tenemos contenido Bi + M
-	ADD.W D3, D2 
-	;Multiplicamos por 2 ya que en la memoria son LONG almacenados como WORD
+	ADD.W D3, D2
+	
+    ;Multiplicamos por 2 para hayar correctamente el indice
+	;de la posicion que buscamos dentro de la memoria 
 	MULU.W #2,D2 
+	MOVE.W D2, A2
 	
     MOVE.W EIR, D3 
 	AND.W #%0000000000000100,D3 ;Mascara
@@ -333,49 +337,42 @@ ESTOX:
 	BSET.L #2,D3 ;Ahora tendremos en D3 11X -> X = 1 o 0
 	JSR CREG ; Hayamos contenido de Tj y direccion
 	
-	MOVE.W D2, A2
+	
 	MOVE.W D3,EMEM(A2) ;Movemos [M + [Bi]] -> A3
-	
-    MOVE.W SR,D4 ;Actualizamos flags
-	JSR FLAGS
-	
-
-	
+		
 	JMP FETCH
 EBRI:
 	MOVE.W EIR,D5
-    AND.W #$0FF0,D5 ;D5 TENEMOS LA M y LA DESPLAZAMOS A LOS BITS MENOS SIGN 
+    AND.W #$0FF0,D5
     LSR.L  #4,D5 
-                    ;ESTE SALTO ES INCONDICIONAL POR TANTO PONEMOS
-                    ;LA DIRECCION DE MEMORIA AL EPC Y VOLVEMOS A FETCH
+    
+    ;Este saltos es incondicional por tantno ponemos
+    ;la direccion de memoria al EPC
     MOVE.W D5,EPC
 	JMP FETCH
 EBRZ:
 	MOVE.W EIR,D5
-    AND.W #$0FF0,D5  ;D5 TENEMOS LA M, 
-    LSR.L  #4,D5     ;MOVEMOS LOS 8 BITS 4 POSUICIONES  A LA DERECHA,
-                     ;PARA TENER LAS MS EN EL BYTE MENOS SIGN
+    AND.W #$0FF0,D5   
+    LSR.L  #4,D5 
 
 
-    AND.W #%0000000000000100,ESR    ;MASCARA DEL BIT 0 
-    BEQ FETCH                     ;SI ES 0 A FETCH SI ES UNO MOVEMOS LA 
-                                  ;DIRECCION DE MEMORIA  EPC Y VOLVEMOS A FETCH
+    AND.W #%0000000000000100,ESR ;Mascara del flag Z 
+    ;Si Z=0 volvemos al fetch, si Z=1 movemos la  
+    ;direccion de memorai a EPC 
+    BEQ FETCH 
     MOVE.W D5,EPC
     
-
-	
 	JMP FETCH
 EBRN:
 	MOVE.W EIR,D5
-    AND.W #$0FF0,D5     ;D5 TENEMOS LA M,
-    LSR.L  #4,D5        ;MOVEMOS LOS 8 BITS 4 POSUICIONES  A LA 
-                        ;DERECHA, PARA TENER LAS MS EN EL BYTE MENOS SIGN
+    AND.W #$0FF0,D5     
+    LSR.L  #4,D5
 
-
-    AND.W #%0000000000000001,ESR   ;MASCARA DEL BIT 2      
+    AND.W #%0000000000000001,ESR ;Mascara del flag N      
+    
+    ;Si N=0 volvemos al fetch, si N=1 movemos la  
+    ;direccion de memorai a EPC 
     BEQ FETCH   
-                       ;SI ES 0 A FETCH SI ES UNO MOVEMOS LA DIRECCION DE 
-                       ;MEMORIA A EPC Y VOLVEMOS A FETCH
     MOVE.W D5,EPC
     
     JMP FETCH
@@ -672,6 +669,7 @@ FINAL:
 
     ;--- FDECOD: FIN DECOD
     END    START
+
 
 
 
