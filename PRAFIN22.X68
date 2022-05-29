@@ -152,9 +152,9 @@ ESUB:
     LSR.L #8,D3
     JSR CREG ;Hayamos posicion de B y su contenido
    
-    ;Se ejecuta la operacion A + (NO_B1 + 1)
-    NOT D3
-    ADD.W #1,D3
+    ;Se ejecuta la operacion B + (NO_A + 1)
+    NOT D2
+    ADD.W #1,D2
     ADD.W D2,D3
     
     ;Guardamos los flags de la operacion y actualizamos los de JARVIS
@@ -669,6 +669,8 @@ FINAL:
 
     ;--- FDECOD: FIN DECOD
     END    START
+
+
 
 
 
