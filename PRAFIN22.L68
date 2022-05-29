@@ -1,6 +1,6 @@
 00001044 Starting Address
 Assembler used: EASy68K Editor/Assembler v5.16.01
-Created On: 26/05/2022 12:02:27
+Created On: 28/05/2022 12:59:28
 
 00000000                             1  
 00000000                             2  *-----------------------------------------------------------
@@ -53,9 +53,9 @@ Created On: 26/05/2022 12:02:27
 0000105C                            49  
 0000105C                            50      ;Preparamos la pila
 0000105C  3F3C 0000                 51      MOVE.W  #0,-(A7)
-00001060  3F38 102E                 52      MOVE.W EIR,-(A7) 
+00001060  3F38 102E                 52      MOVE.W EIR,-(A7)
 00001064                            53      
-00001064  4EB9 00001444             54      JSR DECOD  
+00001064  4EB9 00001444             54      JSR DECOD
 0000106A                            55  
 0000106A                            56      ;Recogemos los datos incorporados que se encontraban final de la pila
 0000106A  31DF 102E                 57      MOVE.W  (A7)+,EIR
@@ -95,15 +95,15 @@ Created On: 26/05/2022 12:02:27
 000010CE                            91  ETRA:
 000010CE  3638 102E                 92      MOVE.W  EIR,D3
 000010D2                            93      ;Obtenemos A
-000010D2  C67C 0070                 94      AND.W   #%0000000001110000,D3 
-000010D6  E88B                      95      LSR.L   #4,D3  
+000010D2  C67C 0070                 94      AND.W   #%0000000001110000,D3
+000010D6  E88B                      95      LSR.L   #4,D3
 000010D8                            96      
 000010D8  4EB9 00001392             97      JSR CREG ;Hayamos posicion de A y su contenido
 000010DE  3403                      98      MOVE.W D3,D2 ;Contenido de A movido a D2
 000010E0                            99      
 000010E0                           100      ;Guardamos los flags de la operacion y actualizamos los de JARVIS
 000010E0  40C4                     101      MOVE.w SR, D4
-000010E2  4EB9 0000132E            102      JSR FLAGS 
+000010E2  4EB9 0000132E            102      JSR FLAGS
 000010E8                           103      
 000010E8  3638 102E                104      MOVE.W  EIR,D3
 000010EC                           105      ;Obtenemos B
@@ -112,22 +112,22 @@ Created On: 26/05/2022 12:02:27
 000010F2  4EB9 00001392            108      JSR CREG
 000010F8                           109      
 000010F8                           110      ;Copiamos el contenido de A a la poscion de B
-000010F8  3682                     111      MOVE.W D2, (A3) 
+000010F8  3682                     111      MOVE.W D2, (A3)
 000010FA                           112      
 000010FA  4EF8 1048                113      JMP FETCH
 000010FE                           114  EADD:
 000010FE  3638 102E                115      MOVE.W  EIR,D3
 00001102                           116      ;Obtenemos A
-00001102  C67C 0070                117      AND.W   #%0000000001110000,D3  
+00001102  C67C 0070                117      AND.W   #%0000000001110000,D3
 00001106  E88B                     118      LSR.L   #4,D3
 00001108                           119      
-00001108  4EB9 00001392            120      JSR     CREG ;Hayamos posicion de A y su contenido
+00001108  4EB9 00001392            120      JSR   CREG ;Hayamos posicion de A y su contenido
 0000110E                           121      
-0000110E  3403                     122      MOVE.W  D3,D2 ;Contenido movido de A a D2                     
+0000110E  3403                     122      MOVE.W  D3,D2 ;Contenido movido de A a D2
 00001110                           123      
 00001110  3638 102E                124      MOVE.W  EIR,D3
 00001114                           125      ;Obtenemos B
-00001114  C67C 0700                126      AND.W   #%0000011100000000,D3 
+00001114  C67C 0700                126      AND.W   #%0000011100000000,D3
 00001118  E08B                     127      LSR.L   #8,D3
 0000111A                           128   
 0000111A  4EB9 00001392            129      JSR CREG ;Hayamos posicion de B y su contenido
@@ -135,8 +135,8 @@ Created On: 26/05/2022 12:02:27
 00001120                           131      ;Sumamos B + A
 00001120  D642                     132      ADD.W D2,D3
 00001122                           133  
-00001122                           134      ;Guardamos los flags de la operacion y actualizamos los de JARVIS    
-00001122  40C4                     135      MOVE.W SR,D4 
+00001122                           134      ;Guardamos los flags de la operacion y actualizamos los de JARVIS
+00001122  40C4                     135      MOVE.W SR,D4
 00001124  4EB9 0000132E            136      JSR FLAGS
 0000112A                           137      
 0000112A                           138      ;Copiamos el resultado a B
@@ -144,12 +144,12 @@ Created On: 26/05/2022 12:02:27
 0000112C  4EF8 1048                140      JMP FETCH
 00001130                           141  ESUB:
 00001130  3638 102E                142      MOVE.W EIR,D3
-00001134  C67C 0070                143      AND.W #%0000000001110000,D3  ;Obtenemos A 
-00001138  E88B                     144      LSR.L #4,D3  
+00001134  C67C 0070                143      AND.W #%0000000001110000,D3  ;Obtenemos A
+00001138  E88B                     144      LSR.L #4,D3
 0000113A                           145  
 0000113A  4EB9 00001392            146      JSR CREG ;Hayamos posicion de A y su contenido
 00001140                           147      
-00001140  3403                     148      MOVE.W D3,D2 ;Contenido movido de A a D2                   
+00001140  3403                     148      MOVE.W D3,D2 ;Contenido movido de A a D2
 00001142                           149      
 00001142  3638 102E                150      MOVE.W EIR,D3
 00001146  C67C 0700                151      AND.W #%0000011100000000,D3 ;Obtenemos B
@@ -158,11 +158,11 @@ Created On: 26/05/2022 12:02:27
 00001152                           154     
 00001152                           155      ;Se ejecuta la operacion A + (NO_B1 + 1)
 00001152  4643                     156      NOT D3
-00001154  5243                     157      ADD.W #1,D3 
+00001154  5243                     157      ADD.W #1,D3
 00001156  D642                     158      ADD.W D2,D3
 00001158                           159      
 00001158                           160      ;Guardamos los flags de la operacion y actualizamos los de JARVIS
-00001158  40C4                     161      MOVE.W SR,D4 
+00001158  40C4                     161      MOVE.W SR,D4
 0000115A  4EB9 0000132E            162      JSR FLAGS
 00001160                           163  
 00001160                           164      ;Copiamos el resultado a B
@@ -171,18 +171,18 @@ Created On: 26/05/2022 12:02:27
 00001166                           167  ENAN:
 00001166  3638 102E                168      MOVE.W EIR,D3
 0000116A                           169      ;Obtenemos A 
-0000116A  C67C 0070                170      AND.W #%0000000001110000,D3  
-0000116E  E88B                     171      LSR.L #4,D3  
+0000116A  C67C 0070                170      AND.W #%0000000001110000,D3
+0000116E  E88B                     171      LSR.L #4,D3
 00001170                           172  
 00001170  4EB9 00001392            173      JSR CREG ;Hayamos posicion de A y su contenido
-00001176  3403                     174      MOVE.W D3,D2 ;Contenido movido de A a D2     
+00001176  3403                     174      MOVE.W D3,D2 ;Contenido movido de A a D2
 00001178                           175      
 00001178  3638 102E                176      MOVE.W EIR,D3
 0000117C  C67C 0700                177      AND.W #%0000011100000000,D3 ;Obtenemos B
 00001180  E08B                     178      LSR.L #8,D3
 00001182  4EB9 00001392            179      JSR CREG ;Hayamos posicion de B y su contenido
 00001188                           180  
-00001188                           181      ;Hacemos la AND de D3 y D2 para luego negarla, 
+00001188                           181      ;Hacemos la AND de D3 y D2 para luego negarla,
 00001188                           182      ;que es lo equivalente a NAND
 00001188  C642                     183      AND.W D2, D3
 0000118A  4643                     184      NOT.W D3 
@@ -430,16 +430,16 @@ Created On: 26/05/2022 12:02:27
 00001378  6700 0008                426      BEQ FN0
 0000137C  4EF9 0000138A            427      JMP FN1
 00001382                           428  
-00001382                           429  FN0:          ;SI EL BIT 2 DE SR ES 0 CAMBIAMOS EL VALOR DE EL BIT 0 DE ESR A 0
+00001382                           429  FN0:        ;SI EL BIT 2 DE SR ES 0 CAMBIAMOS EL VALOR DE EL BIT 0 DE ESR A 0
 00001382  0278 FFFB 1042           430      AND.W #%1111111111111011,ESR
 00001388  4E75                     431      RTS
 0000138A                           432      
-0000138A                           433  FN1:          ;SI EL BIT 2 DE SR ES 1 CAMBIAMOS EL VALOR DE EL BIT 0 DE ESR A 1
+0000138A                           433  FN1:        ;SI EL BIT 2 DE SR ES 1 CAMBIAMOS EL VALOR DE EL BIT 0 DE ESR A 1
 0000138A  0078 0004 1042           434      OR.W #%0000000000000100,ESR
 00001390  4E75                     435      RTS
 00001392                           436  
 00001392                           437  
-00001392                           438  ;///////////////////////////////////////////////////////////////////////////
+00001392                           438  ;//////// Inicio de la subrutina CREG
 00001392                           439  CREG:
 00001392  0803 0002                440      BTST.L #2,D3
 00001396  6700 0016                441      BEQ REG0
@@ -539,10 +539,10 @@ Created On: 26/05/2022 12:02:27
 00001470  4EF9 00001514            535      JMP OI
 00001476                           536  
 00001476                           537  OO:            
-00001476  0800 000D                538          BTST.L #13,D0 ;AL SABER QUE INSTRUCCION ES METEMOS SU VALOR
+00001476  0800 000D                538          BTST.L #13,D0 
 0000147A  6700 0008                539          BEQ OOO
-0000147E  4EF9 00001492            540          JMP OOI            ; NUMERICO ASIGNADO EN ESTA PRACTICA 
-00001484                           541                  ; Y LO METEMOS EN D6 
+0000147E  4EF9 00001492            540          JMP OOI            
+00001484                           541                 
 00001484                           542  OOO:
 00001484  0800 000C                543      BTST.L #12,D0
 00001488  6700 0016                544      BEQ OOOO
@@ -659,14 +659,14 @@ Created On: 26/05/2022 12:02:27
 000015B8                           655  ERROR: 
 000015B8  FFFF FFFF                656      SIMHALT    
 000015BC                           657  VEC:
-000015BC  3F46 000A                658      MOVE.W D6,10(A7) ;AQUI ES DONDE PONEMOS EL ID AL FINAL DE LA PILA 
+000015BC  3F46 000A                658      MOVE.W D6,10(A7) ;AQUI ES DONDE PONEMOS EL ID AL FINAL DE LA PILA
 000015C0  4246                     659      CLR D6           
 000015C2  4EF9 000015C8            660      JMP FINAL 
 000015C8                           661         
 000015C8                           662  FINAL:
 000015C8  3C1F                     663      MOVE.W (A7)+,D6  ;RECUPERAMOS LOS VALORES DE LOS REGISTROS
 000015CA                           664                       ;PARA DEJARLOS COMO ESTABAN ANTES
-000015CA  301F                     665      MOVE.W (A7)+,D0  ;RTS TENEMOS LA DIRECCION PC Y LUEGO CUANDO 
+000015CA  301F                     665      MOVE.W (A7)+,D0  ;RTS TENEMOS LA DIRECCION PC Y LUEGO CUANDO
 000015CC                           666                       ;VOLVEMOS AL PROG PRINCIPAL RECUPERAMOS EIR E ID
 000015CC  4E75                     667      RTS
 000015CE                           668  

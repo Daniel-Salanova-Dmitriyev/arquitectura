@@ -49,9 +49,9 @@ FETCH:
 
     ;Preparamos la pila
 	MOVE.W	#0,-(A7)
-	MOVE.W EIR,-(A7) 
+	MOVE.W EIR,-(A7)
  	
-  	JSR DECOD  
+  	JSR DECOD
 
     ;Recogemos los datos incorporados que se encontraban final de la pila
 	MOVE.W	(A7)+,EIR
@@ -91,15 +91,15 @@ JMPLIST:
 ETRA:
 	MOVE.W 	EIR,D3
 	;Obtenemos A
-    AND.W 	#%0000000001110000,D3 
-    LSR.L 	#4,D3  
+    AND.W 	#%0000000001110000,D3
+    LSR.L 	#4,D3
     
     JSR CREG ;Hayamos posicion de A y su contenido
     MOVE.W D3,D2 ;Contenido de A movido a D2
     
     ;Guardamos los flags de la operacion y actualizamos los de JARVIS
     MOVE.w SR, D4
-    JSR FLAGS 
+    JSR FLAGS
     
     MOVE.W 	EIR,D3
     ;Obtenemos B
@@ -108,22 +108,22 @@ ETRA:
     JSR CREG
     
     ;Copiamos el contenido de A a la poscion de B
-    MOVE.W D2, (A3) 
+    MOVE.W D2, (A3)
     
 	JMP FETCH
 EADD:
 	MOVE.W 	EIR,D3
 	;Obtenemos A
-    AND.W 	#%0000000001110000,D3  
+    AND.W 	#%0000000001110000,D3
     LSR.L 	#4,D3
     
-    JSR 	CREG ;Hayamos posicion de A y su contenido
+    JSR   CREG ;Hayamos posicion de A y su contenido
     
-    MOVE.W 	D3,D2 ;Contenido movido de A a D2                     
+    MOVE.W 	D3,D2 ;Contenido movido de A a D2
     
     MOVE.W 	EIR,D3
     ;Obtenemos B
-    AND.W 	#%0000011100000000,D3 
+    AND.W 	#%0000011100000000,D3
     LSR.L	#8,D3
  
     JSR CREG ;Hayamos posicion de B y su contenido
@@ -131,8 +131,8 @@ EADD:
     ;Sumamos B + A
     ADD.W D2,D3
 
-    ;Guardamos los flags de la operacion y actualizamos los de JARVIS    
-    MOVE.W SR,D4 
+    ;Guardamos los flags de la operacion y actualizamos los de JARVIS
+    MOVE.W SR,D4
     JSR FLAGS
     
     ;Copiamos el resultado a B
@@ -140,12 +140,12 @@ EADD:
 	JMP FETCH
 ESUB:
 	MOVE.W EIR,D3
-    AND.W #%0000000001110000,D3  ;Obtenemos A 
-    LSR.L #4,D3  
+    AND.W #%0000000001110000,D3  ;Obtenemos A
+    LSR.L #4,D3
 
     JSR CREG ;Hayamos posicion de A y su contenido
     
-    MOVE.W D3,D2 ;Contenido movido de A a D2                   
+    MOVE.W D3,D2 ;Contenido movido de A a D2
     
     MOVE.W EIR,D3
     AND.W #%0000011100000000,D3 ;Obtenemos B
@@ -154,11 +154,11 @@ ESUB:
    
     ;Se ejecuta la operacion A + (NO_B1 + 1)
     NOT D3
-    ADD.W #1,D3 
+    ADD.W #1,D3
     ADD.W D2,D3
     
     ;Guardamos los flags de la operacion y actualizamos los de JARVIS
-    MOVE.W SR,D4 
+    MOVE.W SR,D4
     JSR FLAGS
 
     ;Copiamos el resultado a B
@@ -167,18 +167,18 @@ ESUB:
 ENAN:
 	MOVE.W EIR,D3
 	;Obtenemos A 
-    AND.W #%0000000001110000,D3  
-    LSR.L #4,D3  
+    AND.W #%0000000001110000,D3
+    LSR.L #4,D3
 
     JSR CREG ;Hayamos posicion de A y su contenido
-    MOVE.W D3,D2 ;Contenido movido de A a D2     
+    MOVE.W D3,D2 ;Contenido movido de A a D2
     
     MOVE.W EIR,D3
     AND.W #%0000011100000000,D3 ;Obtenemos B
     LSR.L #8,D3
     JSR CREG ;Hayamos posicion de B y su contenido
 
-    ;Hacemos la AND de D3 y D2 para luego negarla, 
+    ;Hacemos la AND de D3 y D2 para luego negarla,
     ;que es lo equivalente a NAND
     AND.W D2, D3
     NOT.W D3 
@@ -426,16 +426,16 @@ FLAGZ:  ;(00000000 000XNZVC)--(00000000 00000ZCN)
     BEQ FN0
     JMP FN1
 
-FN0:          ;SI EL BIT 2 DE SR ES 0 CAMBIAMOS EL VALOR DE EL BIT 0 DE ESR A 0
+FN0:        ;SI EL BIT 2 DE SR ES 0 CAMBIAMOS EL VALOR DE EL BIT 0 DE ESR A 0
     AND.W #%1111111111111011,ESR
     RTS
     
-FN1:          ;SI EL BIT 2 DE SR ES 1 CAMBIAMOS EL VALOR DE EL BIT 0 DE ESR A 1
+FN1:        ;SI EL BIT 2 DE SR ES 1 CAMBIAMOS EL VALOR DE EL BIT 0 DE ESR A 1
     OR.W #%0000000000000100,ESR
     RTS
 
 
-;///////////////////////////////////////////////////////////////////////////
+;//////// Inicio de la subrutina CREG
 CREG:
     BTST.L #2,D3
     BEQ REG0
@@ -535,10 +535,10 @@ O:  ;
     JMP OI
 
 OO:            
-    	BTST.L #13,D0 ;AL SABER QUE INSTRUCCION ES METEMOS SU VALOR
+    	BTST.L #13,D0 
      	BEQ OOO
-    	JMP OOI            ; NUMERICO ASIGNADO EN ESTA PRACTICA 
-                ; Y LO METEMOS EN D6 
+    	JMP OOI            
+               
 OOO:
 	BTST.L #12,D0
 	BEQ	OOOO
@@ -655,20 +655,21 @@ IOIO: ;BRN M
 ERROR: 
 	SIMHALT	   
 VEC:
-    MOVE.W D6,10(A7) ;AQUI ES DONDE PONEMOS EL ID AL FINAL DE LA PILA 
+    MOVE.W D6,10(A7) ;AQUI ES DONDE PONEMOS EL ID AL FINAL DE LA PILA
     CLR D6           
     JMP FINAL 
        
 FINAL:
     MOVE.W (A7)+,D6  ;RECUPERAMOS LOS VALORES DE LOS REGISTROS
                      ;PARA DEJARLOS COMO ESTABAN ANTES
-    MOVE.W (A7)+,D0  ;RTS TENEMOS LA DIRECCION PC Y LUEGO CUANDO 
+    MOVE.W (A7)+,D0  ;RTS TENEMOS LA DIRECCION PC Y LUEGO CUANDO
                      ;VOLVEMOS AL PROG PRINCIPAL RECUPERAMOS EIR E ID
     RTS
 
 
     ;--- FDECOD: FIN DECOD
     END    START
+
 
 
 
